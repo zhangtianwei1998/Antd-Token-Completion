@@ -5,15 +5,17 @@ import setupEventListenerAndDecorations, {
 } from "./listener";
 import setupAntdTokenCompletion from "./typing";
 import { checkAntdProject } from "./utils";
+import { getCustomToken } from "./utils/getCustomToken";
 
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
   let isActive = true;
   let disposeTyping: vscode.Disposable | undefined;
   let disposableAndClear: DisposableAndClear | undefined;
   let disposeEditor: vscode.Disposable | undefined;
+  let customToken: Record<string, string>;
 
   if (isActive || isActive === undefined) {
-    setup();
+    await setup();
   }
 
   const disposable = vscode.commands.registerCommand(
@@ -37,8 +39,13 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(disposable);
 
-  function setup() {
-    const fullToken = getDesignToken();
+  async function setup() {
+    const originToken = getDesignToken();
+
+    const customToken = await getCustomToken();
+
+    const fullToken = { ...originToken, ...customToken };
+    console.log("testfullToken", fullToken.colorPrimary);
 
     if (!fullToken) {
       vscode.window.showErrorMessage("Failed to get antd fullToken.");
