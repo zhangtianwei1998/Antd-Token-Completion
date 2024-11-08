@@ -32,18 +32,36 @@ export function getColorTokenValue(value: string): string {
   return result;
 }
 
-export function checkAntdProject(): boolean {
-  const projectPath = getProjectPath();
+export function getProjectPath(): string | undefined {
+  const fileName = vscode.window.activeTextEditor?.document?.fileName;
 
-  if (projectPath) {
-    const pkgFilePath = path.join(projectPath, "/package.json");
+  return vscode.workspace.workspaceFolders
+    ?.map((folder) => folder.uri.fsPath)
+    .filter((fsPath) => fileName?.startsWith(fsPath))[0];
+}
 
-    if (fs.existsSync(pkgFilePath)) {
-      const packegeJson = fs.readFileSync(pkgFilePath);
-      if (
-        packegeJson.toString().includes("antd") ||
-        packegeJson.toString().includes("rc-")
-      ) {
+function checkAntdInPackageJson(filePath: string): boolean {
+  if (fs.existsSync(filePath)) {
+    const packageJson = fs.readFileSync(filePath, "utf-8");
+    if (packageJson.includes("antd") || packageJson.includes("rc-")) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function checkAntdInDirectory(directory: string): boolean {
+  const files = fs.readdirSync(directory);
+
+  for (const file of files) {
+    const fullPath = path.join(directory, file);
+
+    if (fs.statSync(fullPath).isDirectory()) {
+      if (checkAntdInDirectory(fullPath)) {
+        return true;
+      }
+    } else if (file === "package.json") {
+      if (checkAntdInPackageJson(fullPath)) {
         return true;
       }
     }
@@ -52,10 +70,12 @@ export function checkAntdProject(): boolean {
   return false;
 }
 
-export function getProjectPath(): string | undefined {
-  const fileName = vscode.window.activeTextEditor?.document?.fileName;
+export function checkAntdProject(): boolean {
+  const projectPath = getProjectPath();
 
-  return vscode.workspace.workspaceFolders
-    ?.map((folder) => folder.uri.fsPath)
-    .filter((fsPath) => fileName?.startsWith(fsPath))[0];
+  if (projectPath) {
+    return checkAntdInDirectory(projectPath);
+  }
+
+  return false;
 }

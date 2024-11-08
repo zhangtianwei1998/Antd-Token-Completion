@@ -6,9 +6,14 @@ import { LANGUAGE_SELECTORS } from "./config";
  * register provider for hover and typing antd design token
  */
 export default function setupAntdTokenCompletion(
-  fullToken: any
+  fullToken: Record<string, string>
 ): vscode.Disposable {
   let disposeTyping: vscode.Disposable;
+
+  const colorMap: Record<string, string> = {};
+  for (const [key, value] of Object.entries(fullToken)) {
+    colorMap[value] = key;
+  }
 
   // TYPING
   // Add antd token value tips on typing
@@ -16,23 +21,23 @@ export default function setupAntdTokenCompletion(
   // Based on the kind an icon is chosen by the editor.
   const items: any[] | undefined = [];
 
-  for (let key in fullToken) {
-    let value = fullToken[key as keyof typeof fullToken];
-    const item = new vscode.CompletionItem(`antd-${key}: ${value}`, 11);
-    item.insertText = key.includes("-") ? `['${key}']` : key;
+  for (let key in colorMap) {
+    let value = colorMap[key as keyof typeof colorMap];
+    const item = new vscode.CompletionItem(`antd-${value}: ${key}`, 11);
+    item.insertText = "token." + value;
 
-    if (typeof value === "number") {
-      const sortValue = String(value).padStart(5, "0");
-      item.sortText = `a-${sortValue}-${key}`;
-    } else {
-      item.sortText = `a-${key}`;
-    }
+    // if (typeof value === "number") {
+    //   const sortValue = String(value).padStart(5, "0");
+    //   item.sortText = `a-${sortValue}-${key}`;
+    // } else {
+    //   item.sortText = `a-${key}`;
+    // }
 
-    const colorSpan = genMarkdownString(value);
+    const colorSpan = genMarkdownString(key);
     let documentContent: vscode.MarkdownString | string = "";
 
     documentContent = new vscode.MarkdownString(
-      `<h4>antd design token: ${key}</h4>${colorSpan}<code>${value}</code><br></br>`
+      `<h4>antd design token: ${value}</h4>${colorSpan}<code>${key}</code><br></br>`
     );
     documentContent.supportHtml = true;
 
