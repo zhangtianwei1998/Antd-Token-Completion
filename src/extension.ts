@@ -45,7 +45,6 @@ export async function activate(context: vscode.ExtensionContext) {
     const customToken = await getCustomToken();
 
     const fullToken = { ...originToken, ...customToken };
-    console.log("testfullToken", fullToken.colorPrimary);
 
     if (!fullToken) {
       vscode.window.showErrorMessage("Failed to get antd fullToken.");

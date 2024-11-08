@@ -10,40 +10,33 @@ export default function setupAntdTokenCompletion(
 ): vscode.Disposable {
   let disposeTyping: vscode.Disposable;
 
-  const colorMap: Record<string, string> = {};
+  const colorMap: Record<string, string[]> = {};
   for (const [key, value] of Object.entries(fullToken)) {
-    colorMap[value] = key;
+    if (!colorMap[value]) {
+      colorMap[value] = [];
+    }
+    colorMap[value].push(key);
   }
 
-  // TYPING
-  // Add antd token value tips on typing
-  // Note: 11 is a `value` kind of completion items.
-  // Based on the kind an icon is chosen by the editor.
   const items: any[] | undefined = [];
 
-  for (let key in colorMap) {
-    let value = colorMap[key as keyof typeof colorMap];
-    const item = new vscode.CompletionItem(`antd-${value}: ${key}`, 11);
-    item.insertText = "token." + value;
+  for (const [color, tokens] of Object.entries(colorMap)) {
+    for (const token of tokens) {
+      const item = new vscode.CompletionItem(`antd-${token}: ${color}`, 11);
+      item.insertText = "token." + token;
 
-    // if (typeof value === "number") {
-    //   const sortValue = String(value).padStart(5, "0");
-    //   item.sortText = `a-${sortValue}-${key}`;
-    // } else {
-    //   item.sortText = `a-${key}`;
-    // }
+      const colorSpan = genMarkdownString(color);
+      let documentContent: vscode.MarkdownString | string = "";
 
-    const colorSpan = genMarkdownString(key);
-    let documentContent: vscode.MarkdownString | string = "";
+      documentContent = new vscode.MarkdownString(
+        `<h4>antd design token: ${token}</h4>${colorSpan}<code>${color}</code><br></br>`
+      );
+      documentContent.supportHtml = true;
 
-    documentContent = new vscode.MarkdownString(
-      `<h4>antd design token: ${value}</h4>${colorSpan}<code>${key}</code><br></br>`
-    );
-    documentContent.supportHtml = true;
+      item.documentation = documentContent;
 
-    item.documentation = documentContent;
-
-    items.push(item);
+      items.push(item);
+    }
   }
 
   disposeTyping = vscode.languages.registerCompletionItemProvider(
