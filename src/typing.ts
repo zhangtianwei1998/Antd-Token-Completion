@@ -15,7 +15,7 @@ export default function setupAntdTokenCompletion(
   for (let key in fullToken) {
     let value = fullToken[key as keyof typeof fullToken];
     const item = new vscode.CompletionItem(`antd-${key}: ${value}`, 11);
-    item.insertText = key.includes("-") ? `['${key}']` : key;
+    item.insertText = key.includes("-") ? `token['${key}']` : `token.${key}`;
 
     if (typeof value === "number") {
       const sortValue = String(value).padStart(5, "0");
