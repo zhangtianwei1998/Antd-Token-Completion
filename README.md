@@ -11,7 +11,7 @@ VSCode extension for antd v5 design token.
 1.支持从本地的 token.config.ts 或 token.config.js 文件读取自定义 token 配置 2.更改了插件生效条件
 
 token.config.ts 文件中会读取默认导出的对象，token.config.js 文件会读取变量名为 tokenConfig 的对象，对象的格式如下:
-![decorations](assets/configType.png)
+![decorations](assets/tokenConfig.png)
 会将原始 token，本地 token，请求 token 进行合并，优先级顺序为（请求 token>本地 token>原始 token）,使用合并后的对象进行代码补全
 
 Provide the hover hint and editor decorations of antd v5 design token, include `color`, `value`:

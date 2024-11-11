@@ -2,7 +2,7 @@
   "name": "antd-token-completion",
   "displayName": "antd Token Completion",
   "description": "VSCode extension for antd v5 design token.",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "publisher": "GG-bond-ZTW",
   "engines": {
     "vscode": "^1.68.0"
