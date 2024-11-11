@@ -24,9 +24,15 @@ export async function getCustomToken() {
     let remoteToken;
 
     if (tokenConfig?.fetchParams) {
-      const { url, params, handleRes } = tokenConfig.fetchParams;
-      const response = await axios.get(url, { params });
-      remoteToken = handleRes ? handleRes(response) : response;
+      try {
+        const { url, params, handleRes } = tokenConfig.fetchParams;
+        const response = await axios.get(url, { params });
+        remoteToken = handleRes ? handleRes(response) : response;
+      } catch (e) {
+        vscode.window.showErrorMessage(
+          "error occuur when try to get remote customToken,original and local token will be used for code completion"
+        );
+      }
     }
 
     return { ...(tokenConfig?.token || {}), ...(remoteToken || {}) };
@@ -60,7 +66,6 @@ async function findThemeFile(dir: string): Promise<string | null> {
     const fullPath = path.join(dir, file);
     const stat = await fs.promises.stat(fullPath);
     if (stat.isDirectory()) {
-      // 跳过 node_modules 文件夹
       if (file === "node_modules") {
         continue;
       }
@@ -73,18 +78,4 @@ async function findThemeFile(dir: string): Promise<string | null> {
     }
   }
   return null;
-}
-
-function getValueByPath(obj: any, path: string[]) {
-  if (!Array.isArray(path) || path.length === 0) {
-    return obj;
-  }
-  let current = obj;
-  for (const key of path) {
-    if (current === undefined || current === null) {
-      return undefined;
-    }
-    current = current[key];
-  }
-  return current;
 }

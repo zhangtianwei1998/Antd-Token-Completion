@@ -1,9 +1,9 @@
 {
-  "name": "antd-design-token",
-  "displayName": "antd Design Token",
+  "name": "antd-token-completion",
+  "displayName": "antd Token Completion",
   "description": "VSCode extension for antd v5 design token.",
-  "version": "0.3.6",
-  "publisher": "shezhangzhang",
+  "version": "0.4.1",
+  "publisher": "GG-bond-ZTW",
   "engines": {
     "vscode": "^1.68.0"
   },
@@ -65,8 +65,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/shezhangzhang/antd-design-token.git"
+    "url": "https://github.com/zhangtianwei1998/antd-token-completion"
   },
   "license": "MIT",
-  "author": "shezhangzhang"
+  "author": "GG-bond-ZTW"
 }
